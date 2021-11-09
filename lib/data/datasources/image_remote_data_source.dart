@@ -1,4 +1,5 @@
 import 'package:art_gallery/data/models/image_model.dart';
+import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:file_picker/file_picker.dart';
 
 import 'package:firebase_storage/firebase_storage.dart';
@@ -9,29 +10,42 @@ abstract class ImageRemoteDataSource {
 }
 
 class FirebaseImageRemoteDataSource implements ImageRemoteDataSource {
-  final firebaseStorageRef = FirebaseStorage.instance.ref().child('images/');
+  // final firebaseStorageRef = FirebaseStorage.instance.ref().child('images/');
+  final imageCollection = FirebaseFirestore.instance.collection('images');
 
   @override
   Future<List<ImageModel>> getImages() async {
-    final modelList = <ImageModel>[];
-
-    final listResults = await firebaseStorageRef.listAll();
-
-    for (var i = 0; i < listResults.items.length; i++) {
-      final downloadUrl = await listResults.items[i].getDownloadURL();
-      print('downloadUrl $downloadUrl');
-
-      modelList.add(
-        ImageModel(
-          name: listResults.items[i].name,
-          downloadUrl: downloadUrl,
-        ),
-      );
-    }
-
-    print('modelList $modelList');
-    return modelList;
+    final querySnapshot = await imageCollection.get();
+    return querySnapshot.docs
+        .map((doc) => ImageModel.fromSnapshot(doc))
+        .toList();
   }
+
+// reference for future firebase storage uses
+//
+
+  //  @override
+  // Future<List<ImageModel>> getImages() async {
+  //   final modelList = <ImageModel>[];
+
+  //   final listResults = await firebaseStorageRef.listAll();
+
+  //   for (var i = 0; i < listResults.items.length; i++) {
+  //     final downloadUrl = await listResults.items[i].getDownloadURL();
+  //     print('downloadUrl $downloadUrl');
+
+  //     modelList.add(
+  //       ImageModel(
+  //         name: listResults.items[i].name,
+  //         downloadUrl: downloadUrl,
+  //         artistName: 'f',
+  //       ),
+  //     );
+  //   }
+
+  //   print('modelList $modelList');
+  //   return modelList;
+  // }
 
   @override
   Future<double> uploadImage() async {

@@ -1,11 +1,12 @@
 import 'package:art_gallery/data/datasources/image_remote_data_source.dart';
 import 'package:art_gallery/data/repositories/image_repository_firebase.dart';
-import 'package:art_gallery/home_page.dart';
+import 'package:art_gallery/presentation/pages/home_page.dart';
 import 'package:art_gallery/presentation/controllers/image_controller.dart';
 
 import 'package:firebase_core/firebase_core.dart';
 
 import 'package:flutter/material.dart';
+import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:get/get.dart';
 
 void main() async {
@@ -23,9 +24,11 @@ class MyApp extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return GetMaterialApp(
-      debugShowCheckedModeBanner: false,
-      home: HomePage(),
+    return ScreenUtilInit(
+      builder: () => GetMaterialApp(
+        debugShowCheckedModeBanner: false,
+        home: HomePage(),
+      ),
     );
   }
 }
